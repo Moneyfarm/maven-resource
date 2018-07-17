@@ -103,6 +103,30 @@ $resource_dir/mvnw dependency:copy $args
 
 jq -n \
 --arg version "$version" \
+--arg groupId "$groupId" \
+--arg artifactId "$artifactId" \
+--arg packaging "$packaging" \
+--arg url "$url" \
 '{
-  version: {version: $version}
+  version: $version,
+  groupId: $groupId,
+  artifactId: $artifactId,
+  packaging: $packaging,
+  url: $url
+ }' > $destination/$artifactId-$version.json
+
+jq -n \
+--arg version "$version" \
+--arg groupId "$groupId" \
+--arg artifactId "$artifactId" \
+--arg packaging "$packaging" \
+--arg url "$url" \
+'{
+  version: {version: $version},
+  metadata: [
+  { "name": "groupId", "value": $groupId },
+  { "name": "artifactId", "value": $artifactId },
+  { "name": "packaging", "value": $packaging },
+  { "name": "url", "value": $url }
+  ]
 }' >&3

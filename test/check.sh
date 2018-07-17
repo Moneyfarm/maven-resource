@@ -95,7 +95,60 @@ it_can_check_latest_from_three_versions() {
   '
 }
 
+it_can_check_regexp_from_three_versions() {
+
+  local src=$(mktemp -d $TMPDIR/check-src.XXXXXX)
+
+  local repository=$src/remote-repository
+  mkdir -p $repository
+
+  local url=file://$repository
+  local artifact=ci.concourse.maven:maven-resource:jar:standalone
+
+  local version1=$(deploy_artifact $url $artifact '1.1.' $src)
+  local version2=$(deploy_artifact $url $artifact '4.4.4' $src)
+  local version3=$(deploy_artifact $url $artifact '4.10.4' $src)
+
+  check_artifact_regex $url $artifact "4.4.*" $src | \
+  jq -e \
+  --arg version $version2 \
+  '
+    . == [
+      {version: $version}
+    ]
+  '
+}
+
+
+it_can_check_regexp_minor_from_patches() {
+
+  local src=$(mktemp -d $TMPDIR/check-src.XXXXXX)
+
+  local repository=$src/remote-repository
+  mkdir -p $repository
+
+  local url=file://$repository
+  local artifact=ci.concourse.maven:maven-resource:jar:standalone
+
+  local version1=$(deploy_artifact $url $artifact '1.1.0' $src)
+  local version2=$(deploy_artifact $url $artifact '4.4.4' $src)
+  local version3=$(deploy_artifact $url $artifact '4.4.5' $src)
+
+  check_artifact_regex $url $artifact "4.4.*" $src | \
+  jq -e \
+  --arg version2 $version2 \
+  --arg version3 $version3 \
+  '
+    . == [
+      {version: $version2},
+      {version: $version3}
+    ]
+  '
+}
+
 run it_can_check_from_one_version
 run it_can_check_from_three_versions
 run it_can_check_latest_from_one_version
 run it_can_check_latest_from_three_versions
+run it_can_check_regexp_from_three_versions
+run it_can_check_regexp_minor_from_patches
