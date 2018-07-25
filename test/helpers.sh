@@ -154,6 +154,26 @@ check_artifact() {
   }' | $resource_dir/check "$src" | tee /dev/stderr
 }
 
+
+check_artifact_regex() {
+  local url=$1
+  local artifact=$2
+  local regex=$3
+  local src=$4
+
+  jq -n \
+  --arg url "$url" \
+  --arg artifact "$artifact" \
+  --arg regex "$regex" \
+  '{
+    source: {
+      url: $url,
+      artifact: $artifact,
+      version_regexp: $regex
+    }
+  }' | $resource_dir/check "$src" | tee /dev/stderr
+}
+
 check_artifact_from_manager() {
 
   local version=$1

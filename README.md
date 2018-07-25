@@ -34,6 +34,7 @@ Deploys and retrieve artifacts from a Maven Repository Manager.
       -----END CERTIFICATE-----
     ```
 
+* `version_regexp`: *Optional.* You can set a regex to follow specific versions like: `1.*` or `1.2.*`
 
 ## Behavior
 
